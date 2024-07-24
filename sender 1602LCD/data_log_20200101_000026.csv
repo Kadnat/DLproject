@@ -1,0 +1,4 @@
+Year,Month,Day,Hour,Minute,Second,Dendrometer(uM),Pressure(hPa),Temp SHT41(C),Humidity(%),Moisture Level
+2020,1,1,0,0,26,0.0,978.35,22.068,51.0058,356
+2020,1,1,0,0,36,0.0,978.336,22.0466,50.9638,355
+2020,1,1,0,0,47,0.0,978.331,22.0573,51.023,358
