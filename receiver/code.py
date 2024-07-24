@@ -81,15 +81,18 @@ while True:
             second = int(time_components[2])
 
             # Extract values from the packet text
-            dendro = float(components[1].split(": ")[1])
-            press = float(components[2].split(": ")[1])
-            temp = float(components[3].split(": ")[1])
-            hum = float(components[4].split(": ")[1])
-            moisture = float(components[5].split(": ")[1])
+            dendro0 = float(components[1].split(": ")[1])
+            dendro1 = float(components[2].split(": ")[1])
+            dendro2 = float(components[3].split(": ")[1])
+            dendro3 = float(components[4].split(": ")[1])
+            press = float(components[5].split(": ")[1])
+            temp = float(components[6].split(": ")[1])
+            hum = float(components[7].split(": ")[1])
+            moisture = float(components[8].split(": ")[1])
 
             # Create a string with the parsed data
-            data_to_send = f"{sending_node},{year},{month},{day},{hour},{minute},{second},{temp},{hum},{press},{dendro},{moisture}"
-            print(f"Parsed data: Node={sending_node}, Date={date_str}, Time={time_str}, Temp={temp}, Hum={hum}, Press={press}, Dendro={dendro}, Moisture={moisture}")
+            data_to_send = f"{sending_node},{year},{month},{day},{hour},{minute},{second},{temp},{hum},{press},{dendro0},{dendro1},{dendro2},{dendro3},{moisture}"
+            print(f"Parsed data: Node={sending_node}, Date={date_str}, Time={time_str}, Temp={temp}, Hum={hum}, Press={press}, Dendro={dendro0}, Dendro={dendro1}, Dendro={dendro2}, Dendro={dendro3}, Moisture={moisture}")
 
             # Wake up the Arduino
             WAKE_PIN.value = True

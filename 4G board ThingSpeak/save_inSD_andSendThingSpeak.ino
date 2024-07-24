@@ -7,7 +7,7 @@
 #include <ArduinoLowPower.h>
 
 // Define API keys for each channel
-String ApikeyNode2 = "U6JWFDMITGEYDET5";
+String ApikeyNode2 = "PVQKI3W5Y1ENSEFD";
 String ApikeyNode3 = "YOUR_API_KEY_NODE_3";
 String ApikeyNode4 = "YOUR_API_KEY_NODE_4";
 String ApikeyNode5 = "YOUR_API_KEY_NODE_5";
@@ -85,7 +85,10 @@ void loop() {
         float t = 0.0;
         float h = 0.0;
         float p = 0.0;
-        float d = 0.0;
+        float d0 = 0.0;
+        float d1 = 0.0;
+        float d2 = 0.0;
+        float d3 = 0.0;
         float m = 0.0;
 
         token = strtok(receivedDataCopy, ",");
@@ -121,7 +124,16 @@ void loop() {
         p = atof(token);
 
         token = strtok(NULL, ",");
-        d = atof(token);
+        d0 = atof(token);
+
+        token = strtok(NULL, ",");
+        d1 = atof(token);
+
+        token = strtok(NULL, ",");
+        d2 = atof(token);
+
+        token = strtok(NULL, ",");
+        d3 = atof(token);
 
         token = strtok(NULL, ",");
         m = atof(token);
@@ -137,8 +149,14 @@ void loop() {
         SerialUSB.print(h);
         SerialUSB.print(", Press=");
         SerialUSB.print(p);
-        SerialUSB.print(", Dendro=");
-        SerialUSB.print(d);
+        SerialUSB.print(", Dendro0=");
+        SerialUSB.print(d0);
+        SerialUSB.print(", Dendro1=");
+        SerialUSB.print(d1);
+        SerialUSB.print(", Dendro2=");
+        SerialUSB.print(d2);
+        SerialUSB.print(", Dendro3=");
+        SerialUSB.print(d3);
         SerialUSB.print(", Moisture=");
         SerialUSB.println(m);
 
@@ -160,7 +178,13 @@ void loop() {
             dataFile.print(",");
             dataFile.print(p, 4);
             dataFile.print(",");
-            dataFile.print(d, 4);
+            dataFile.print(d0, 4);
+            dataFile.print(",");
+            dataFile.print(d1, 4);
+            dataFile.print(",");
+            dataFile.print(d2, 4);
+            dataFile.print(",");
+            dataFile.print(d3, 4);
             dataFile.print(",");
             dataFile.println(m, 4);
             dataFile.close();
@@ -173,7 +197,10 @@ void loop() {
         String t_str = String(t, 4);
         String h_str = String(h, 4);
         String p_str = String(p, 4);
-        String d_str = String(d, 4);
+        String d0_str = String(d0, 4);
+        String d1_str = String(d1, 4);
+        String d2_str = String(d2, 4);
+        String d3_str = String(d3, 4);
         String m_str = String(m, 4);
 
         // Set appropriate API key based on node
@@ -197,7 +224,7 @@ void loop() {
         }
 
         // Build URL with all fields except date and time
-        String http_str = "AT+HTTPPARA=\"URL\",\"https://api.thingspeak.com/update?api_key=" + Apikey + "&field1=" + t_str + "&field2=" + h_str + "&field3=" + p_str + "&field4=" + d_str + "&field5=" + m_str + "\"\r\n";
+        String http_str = "AT+HTTPPARA=\"URL\",\"https://api.thingspeak.com/update?api_key=" + Apikey + "&field1=" + t_str + "&field2=" + h_str + "&field3=" + p_str + "&field4=" + d0_str + "&field5=" + m_str + "&field6=" + d1_str + "&field7=" + d2_str + "&field8=" + d3_str + "\"\r\n";
         SerialUSB.println(http_str);
 
         int retryCount = 0;

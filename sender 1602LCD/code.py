@@ -223,24 +223,30 @@ def test_sht41():
         print(f"Error reading SHT41: {e}")
         return 0, 0  # Return 0 in case of error
 
-# Initialize ADS1115
+# Initialize ADS1115 for ADC readings
 try:
-    ads = ADS1115(i2c0)
-    adc = AnalogIn(ads, ADS.P0)
+    ads = ADS.ADS1115(i2c0)
+    adc0 = AnalogIn(ads, ADS.P0)
+    adc1 = AnalogIn(ads, ADS.P1)
+    adc2 = AnalogIn(ads, ADS.P2)
+    adc3 = AnalogIn(ads, ADS.P3)
 except Exception as e:
     print(f"Error initializing ADS1115: {e}")
     ads = None
-    adc = None
+    adc0 = None
+    adc1 = None
+    adc2 = None
+    adc3 = None
 
 # Read ADC values
-def read_adc():
-    if adc:
+def read_adc0():
+    if adc0:
         try:
-            adc_value = adc.value
-            if adc_value < 275:
-                adc_value = 275
-            voltage = ((adc_value - 275) / 65535.0) * (3.3 - 0.012)
-            microns = voltage / (3.3 - 0.012) * 25400
+            adc_value = adc0.value
+            if adc_value < 0:
+                adc_value = 0
+            voltage = ((adc_value) / 65535.0) * (3.3)
+            microns = voltage / (3.3) * 25400
             return voltage, microns
         except Exception as e:
             print(f"Error reading ADC: {e}")
@@ -248,18 +254,107 @@ def read_adc():
     else:
         return 0, 0
 
-# Calculate moving average of ADC values over 100 measurements
-def mean_adc():
-    microns_values = []
-    voltages_values = []
+def read_adc1():
+    if adc1:
+        try:
+            adc_value = adc1.value
+            if adc_value < 0:
+                adc_value = 0
+            voltage = ((adc_value) / 65535.0) * (3.3)
+            microns = voltage / (3.3) * 25400
+            return voltage, microns
+        except Exception as e:
+            print(f"Error reading ADC: {e}")
+            return 0, 0
+    else:
+        return 0, 0
+        
+
+def read_adc2():
+    if adc2:
+        try:
+            adc_value = adc2.value
+            if adc_value < 0:
+                adc_value = 0
+            voltage = ((adc_value) / 65535.0) * (3.3)
+            microns = voltage / (3.3) * 25400
+            return voltage, microns
+        except Exception as e:
+            print(f"Error reading ADC: {e}")
+            return 0, 0
+    else:
+        return 0, 0
+        
+
+def read_adc3():
+    if adc3:
+        try:
+            adc_value = adc3.value
+            if adc_value < 0:
+                adc_value = 0
+            voltage = ((adc_value) / 65535.0) * (3.3)
+            microns = voltage / (3.3) * 25400
+            return voltage, microns
+        except Exception as e:
+            print(f"Error reading ADC: {e}")
+            return 0, 0
+    else:
+        return 0, 0
+
+# Calculate moving average of ADC values over 100 readings
+def mean_adc0():
+    microns_values0 = []
+    voltages_values0 = []
     for i in range(100):
-        voltage, microns = read_adc()
-        if voltage is not None and microns is not None:
-            microns_values.append(microns)
-            voltages_values.append(voltage)
+        voltage0, microns0 = read_adc0()
+        if voltage0 is not None and microns0 is not None:
+            microns_values0.append(microns0)
+            voltages_values0.append(voltage0)
         time.sleep(0.1)  # Adjust this delay based on measurement speed
-    if microns_values and voltages_values:
-        return sum(microns_values) / len(microns_values), sum(voltages_values) / len(voltages_values)
+    if microns_values0 and voltages_values0:
+        return sum(microns_values0) / len(microns_values0), sum(voltages_values0) / len(voltages_values0)
+    else:
+        return 0, 0
+
+def mean_adc1():
+    microns_values1 = []
+    voltages_values1 = []
+    for i in range(100):
+        voltage1, microns1 = read_adc1()
+        if voltage1 is not None and microns1 is not None:
+            microns_values1.append(microns1)
+            voltages_values1.append(voltage1)
+        time.sleep(0.1)  # Adjust this delay based on measurement speed
+    if microns_values1 and voltages_values1:
+        return sum(microns_values1) / len(microns_values1), sum(voltages_values1) / len(voltages_values1)
+    else:
+        return 0, 0
+
+def mean_adc2():
+    microns_values2 = []
+    voltages_values2 = []
+    for i in range(100):
+        voltage2, microns2 = read_adc2()
+        if voltage2 is not None and microns2 is not None:
+            microns_values2.append(microns2)
+            voltages_values2.append(voltage2)
+        time.sleep(0.1)  # Adjust this delay based on measurement speed
+    if microns_values2 and voltages_values2:
+        return sum(microns_values2) / len(microns_values2), sum(voltages_values2) / len(voltages_values2)
+    else:
+        return 0, 0
+
+def mean_adc3():
+    microns_values3 = []
+    voltages_values3 = []
+    for i in range(100):
+        voltage3, microns3 = read_adc3()
+        if voltage3 is not None and microns3 is not None:
+            microns_values3.append(microns3)
+            voltages_values3.append(voltage3)
+        time.sleep(0.1)  # Adjust this delay based on measurement speed
+    if microns_values3 and voltages_values3:
+        return sum(microns_values3) / len(microns_values3), sum(voltages_values3) / len(voltages_values3)
     else:
         return 0, 0
 
@@ -326,7 +421,7 @@ def save_to_csv(data):
             if not file_exists_flag:
                 writer.writerow([
                     "Year", "Month", "Day", "Hour", "Minute", "Second",
-                    "Dendrometer(uM)", "Pressure(hPa)", "Temp SHT41(C)",
+                    "Dendrometer 0(uM)", "Dendrometer 1(uM)", "Dendrometer 2(uM)", "Dendrometer 3(uM)", "Pressure(hPa)", "Temp SHT41(C)",
                     "Humidity(%)", "Moisture Level"
                 ])
             writer.writerow(data)
@@ -343,8 +438,14 @@ def start_mes_mode():
 
         # If 30-minute interval has passed
         if current_time - start_time >= interval:
-            mean_microns, mean_voltages = mean_adc()
-            print('mean microns=' + str(mean_microns))
+            mean_microns0, mean_voltages0 = mean_adc0()
+            mean_microns1, mean_voltages1 = mean_adc1()
+            mean_microns2, mean_voltages2 = mean_adc2()
+            mean_microns3, mean_voltages3 = mean_adc3()
+            print('mean microns0=' + str(mean_microns0))
+            print('mean microns1=' + str(mean_microns1))
+            print('mean microns2=' + str(mean_microns2))
+            print('mean microns3=' + str(mean_microns3))
 
             temperature_dps310, pressure = test_dps310()
             print('temperature_dps310=' + str(temperature_dps310))
@@ -367,13 +468,12 @@ def start_mes_mode():
             month = current_time_struct.tm_mon
             day = current_time_struct.tm_mday
 
-            data = [year, month, day, hours, minutes, seconds, mean_microns, pressure, temperature_sht41, humidity, moisture]
+            data = [year, month, day, hours, minutes, seconds, mean_microns0, mean_microns1, mean_microns2, mean_microns3, pressure, temperature_sht41, humidity, moisture]
             save_to_csv(data)  # Save data to CSV file
 
-            data = f"{year}/{month}/{day} {hours}:{minutes}:{seconds},Dendro: {mean_microns}, Press: {pressure}, Temp: {temperature_sht41}, Hum: {humidity}, Moisture: {moisture}"
+            data = f"{year}/{month}/{day} {hours}:{minutes}:{seconds},Dendro0: {mean_microns0},Dendro1: {mean_microns1},Dendro2: {mean_microns2},Dendro3: {mean_microns3}, Press: {pressure}, Temp: {temperature_sht41}, Hum: {humidity}, Moisture: {moisture}"
             #send_data_without_ack(bytes(data, "UTF-8"))
             send_data_with_retry(bytes(data, "UTF-8"))
-            print(f"Filtered value: {mean_microns}")
 
             # Reset start time for next 30-minute period
             start_time = current_time
