@@ -21,6 +21,13 @@ String lastSentCSV = "";
 File dataFile;
 File lastSentFile;
 
+/**
+ * @brief Initializes the necessary components and performs setup operations.
+ * 
+ * This function is called once when the microcontroller starts up. It initializes the serial communication,
+ * sets the pin modes, initializes the SD card, and reads the name of the last sent CSV file. It also calls
+ * the `sendCSVToGoogleSheets` function to send a CSV file to Google Sheets.
+ */
 void setup() {
     SerialUSB.begin(115200);
     Serial1.begin(115200);
@@ -66,6 +73,10 @@ void setup() {
     sendCSVToGoogleSheets("2024-6-5");
 }
 
+/**
+ * The main loop of the program.
+ * This function is called repeatedly and handles the processing of received data.
+ */
 void loop() {
     if (dataReceived) {
         dataReceived = false;
@@ -179,6 +190,15 @@ void loop() {
     }
 }
 
+/**
+ * @brief Receives data from the I2C bus.
+ * 
+ * This function is called when data is received from the I2C bus. It reads the data
+ * byte by byte and stores it in the `receivedData` variable. Once all the data is
+ * received, it sets the `dataReceived` flag to true.
+ * 
+ * @param howMany The number of bytes received.
+ */
 void receiveEvent(int howMany) {
     receivedData = "";
     while (Wire.available()) {
@@ -188,6 +208,11 @@ void receiveEvent(int howMany) {
     dataReceived = true;
 }
 
+/**
+ * Sends the contents of a CSV file to Google Sheets.
+ * 
+ * @param date The date used to construct the filename of the CSV file.
+ */
 void sendCSVToGoogleSheets(String date) {
     String fileName = date + ".csv";
 
@@ -258,6 +283,18 @@ void sendCSVToGoogleSheets(String date) {
 }
 
 
+/**
+ * Sends data to Google Sheets using a Web App URL.
+ * 
+ * @param datetime The date and time of the data.
+ * @param node The node identifier.
+ * @param temp The temperature value.
+ * @param hum The humidity value.
+ * @param press The pressure value.
+ * @param dendro The dendrometer value.
+ * @param moisture The moisture value.
+ * @return True if the data is sent successfully, false otherwise.
+ */
 bool sendDataToGoogleSheets(String datetime, int node, float temp, float hum, float press, float dendro, float moisture) {
     // URL of your Web App
     String webAppUrl = "https://script.google.com/macros/s/testestexec";
@@ -299,6 +336,14 @@ bool sendDataToGoogleSheets(String datetime, int node, float temp, float hum, fl
     return success;
 }
 
+/**
+ * Sends a command to the Serial1 port and waits for a response.
+ * 
+ * @param command The command to send.
+ * @param timeout The maximum time to wait for a response, in milliseconds.
+ * @param debug   Whether to print the response to the SerialUSB port for debugging purposes.
+ * @return        The response received from the Serial1 port.
+ */
 String sendData(String command, const int timeout, boolean debug) {
     String response = "";
     Serial1.println(command);
@@ -316,6 +361,12 @@ String sendData(String command, const int timeout, boolean debug) {
     return response;
 }
 
+/**
+ * Encodes a given string using URL encoding.
+ * 
+ * @param str The string to be encoded.
+ * @return The URL-encoded string.
+ */
 String urlEncode(String str) {
     String encodedString = "";
     char c;

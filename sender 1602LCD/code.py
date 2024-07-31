@@ -31,6 +31,15 @@ csv_filename = None
 
 # Function to scan the I2C bus
 def i2c_scan(i2c):
+    """
+    Scans the I2C bus for connected devices.
+
+    Args:
+        i2c: The I2C bus object.
+
+    Returns:
+        A list of hexadecimal addresses representing the connected I2C devices.
+    """
     print("Scanning I2C bus...")
     devices = []
     while not i2c.try_lock():
@@ -109,6 +118,18 @@ adc_values = []
 
 # Update display with current time
 def update_display():
+    """
+    Updates the display with the current time and date.
+
+    This function formats the current time and date into strings and prints them on the LCD display.
+    The time is formatted as "HH:MM:SS" and the date is formatted as "YY/MM/DD".
+
+    Parameters:
+    None
+
+    Returns:
+    None
+    """
     time_str = "{:02}:{:02}:{:02}".format(hours, minutes, seconds)
     date_str = "{:02}/{:02}/{:02}".format(year, month, day)
     lcd.clear()
@@ -119,11 +140,39 @@ enable_menu = True
 
 # Update RTC with current time
 def update_rtc():
+    """
+    Updates the real-time clock (RTC) with the specified date and time values.
+
+    This function sets the date and time of the RTC using the global variables:
+    - hours: The hour value (0-23)
+    - minutes: The minute value (0-59)
+    - seconds: The second value (0-59)
+    - year: The year value (e.g., 2022)
+    - month: The month value (1-12)
+    - day: The day value (1-31)
+
+    Note: The RTC instance must be initialized before calling this function.
+
+    """
     global hours, minutes, seconds, year, month, day
     rtc_instance.datetime = time.struct_time((year, month, day, hours, minutes, seconds, 0, -1, -1))
 
 # Mode to set time
 def set_time_mode():
+    """
+    Sets the time mode and allows the user to adjust the hours, minutes, seconds, year, month, and day.
+
+    This function continuously reads the buttons and updates the corresponding time or date value based on the button pressed.
+    The time values (hours, minutes, seconds) are updated when the date mode is not active.
+    The date values (year, month, day) are updated when the date mode is active.
+    The function also includes debounce delays to prevent multiple button presses from being registered.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     global hours, minutes, seconds, year, month, day
     setting_hours = True
     date_mode = False
@@ -198,6 +247,12 @@ except Exception as e:
     ss = None
 
 def read_moisture():
+    """
+    Reads the soil moisture level.
+
+    Returns:
+        int: The soil moisture level.
+    """
     if ss:
         try:
             return ss.moisture_read()
@@ -207,7 +262,14 @@ def read_moisture():
     else:
         return 0
 
-def test_dps310():
+def read_dps310():
+    """
+    Reads the temperature and pressure from the DPS310 sensor.
+
+    Returns:
+        temperature (float): The temperature in degrees Celsius.
+        pressure (float): The pressure in Pascal.
+    """
     try:
         dps310 = DPS310(i2c0)
         return dps310.temperature, dps310.pressure
@@ -215,7 +277,14 @@ def test_dps310():
         print(f"Error reading DPS310: {e}")
         return 0, 0  # Return 0 in case of error
 
-def test_sht41():
+def read_sht41():
+    """
+    Reads the measurements from the SHT41 sensor.
+
+    Returns:
+        tuple: A tuple containing the temperature and humidity measurements.
+               If an error occurs during reading, (0, 0) is returned.
+    """
     try:
         sht = SHT4x(i2c0)
         return sht.measurements
@@ -240,6 +309,16 @@ except Exception as e:
 
 # Read ADC values
 def read_adc0():
+    """
+    Reads the value from ADC0 and calculates the corresponding voltage and microns.
+
+    Returns:
+        voltage (float): The voltage value read from ADC0.
+        microns (float): The corresponding value in microns calculated from the voltage.
+
+    Raises:
+        Exception: If there is an error reading the ADC.
+    """
     if adc0:
         try:
             adc_value = adc0.value
@@ -255,6 +334,16 @@ def read_adc0():
         return 0, 0
 
 def read_adc1():
+    """
+    Reads the value from ADC1 and calculates the corresponding voltage and microns.
+
+    Returns:
+        voltage (float): The voltage value read from ADC1.
+        microns (float): The corresponding value in microns calculated from the voltage.
+
+    Raises:
+        Exception: If there is an error reading the ADC.
+    """
     if adc1:
         try:
             adc_value = adc1.value
@@ -271,6 +360,17 @@ def read_adc1():
         
 
 def read_adc2():
+    """
+    Reads the value from ADC2 and calculates the corresponding voltage and microns.
+
+    Returns:
+        voltage (float): The voltage value read from ADC2.
+        microns (float): The corresponding value in microns calculated from the voltage.
+
+    Raises:
+        Exception: If there is an error reading the ADC.
+
+    """
     if adc2:
         try:
             adc_value = adc2.value
@@ -287,6 +387,17 @@ def read_adc2():
         
 
 def read_adc3():
+    """
+    Reads the value from ADC3 and calculates the corresponding voltage and microns.
+
+    Returns:
+        voltage (float): The voltage value read from ADC3.
+        microns (float): The corresponding value in microns calculated from the voltage.
+
+    Raises:
+        Exception: If there is an error reading the ADC.
+
+    """
     if adc3:
         try:
             adc_value = adc3.value
@@ -303,6 +414,13 @@ def read_adc3():
 
 # Calculate moving average of ADC values over 100 readings
 def mean_adc0():
+    """
+    Calculate the mean values of microns and voltages obtained from ADC0.
+
+    Returns:
+        Tuple[float, float]: A tuple containing the mean value of microns and the mean value of voltages.
+            If no valid values are obtained, (0, 0) is returned.
+    """
     microns_values0 = []
     voltages_values0 = []
     for i in range(100):
@@ -317,6 +435,13 @@ def mean_adc0():
         return 0, 0
 
 def mean_adc1():
+    """
+    Calculate the mean values of microns and voltages obtained from ADC1.
+
+    Returns:
+        Tuple[float, float]: A tuple containing the mean value of microns and the mean value of voltages.
+            If no valid values are obtained, (0, 0) is returned.
+    """
     microns_values1 = []
     voltages_values1 = []
     for i in range(100):
@@ -331,6 +456,13 @@ def mean_adc1():
         return 0, 0
 
 def mean_adc2():
+    """
+    Calculate the mean values of microns and voltages obtained from ADC2.
+
+    Returns:
+        Tuple[float, float]: A tuple containing the mean value of microns and the mean value of voltages.
+            If no valid values are obtained, (0, 0) is returned.
+    """
     microns_values2 = []
     voltages_values2 = []
     for i in range(100):
@@ -345,6 +477,13 @@ def mean_adc2():
         return 0, 0
 
 def mean_adc3():
+    """
+    Calculate the mean values of microns and voltages obtained from ADC3.
+
+    Returns:
+        Tuple[float, float]: A tuple containing the mean value of microns and the mean value of voltages.
+            If no valid values are obtained, (0, 0) is returned.
+    """
     microns_values3 = []
     voltages_values3 = []
     for i in range(100):
@@ -360,6 +499,18 @@ def mean_adc3():
 
 # Send data without waiting for acknowledgement
 def send_data_without_ack(data):
+    """
+    Sends data without waiting for acknowledgement.
+
+    Args:
+        data: The data to be sent.
+
+    Raises:
+        Exception: If there is an error sending the data.
+
+    Returns:
+        None
+    """
     try:
         rfm9x.send(data)
         print("Data sent without waiting for acknowledgement")
@@ -368,6 +519,16 @@ def send_data_without_ack(data):
 
 # Send data with retry and acknowledgement
 def send_data_with_retry(data, retries=5):
+    """
+    Sends data using the rfm9x module with retry mechanism.
+
+    Args:
+        data: The data to be sent.
+        retries (optional): The number of retries in case of failure. Default is 5.
+
+    Returns:
+        True if the data was successfully sent and acknowledged, False otherwise.
+    """
     for attempt in range(retries):
         try:
             rfm9x.send(data)
@@ -388,6 +549,14 @@ def send_data_with_retry(data, retries=5):
 
 # Set CSV filename based on current date and time
 def set_csv_filename():
+    """
+    Sets the global variable `csv_filename` with a formatted string representing the current time.
+
+    The `csv_filename` is set in the format "/data_log_{YYYY}{MM}{DD}_{HH}{MM}{SS}.csv",
+    where {YYYY} represents the current year, {MM} represents the current month,
+    {DD} represents the current day, {HH} represents the current hour,
+    {MM} represents the current minute, and {SS} represents the current second.
+    """
     global csv_filename
     current_time = time.localtime()
     csv_filename = "/data_log_{:04d}{:02d}{:02d}_{:02d}{:02d}{:02d}.csv".format(
@@ -397,6 +566,15 @@ def set_csv_filename():
 
 # Check if file exists
 def file_exists(filename):
+    """
+    Check if a file exists.
+
+    Args:
+        filename (str): The name of the file to check.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
     try:
         with open(filename, 'r') as f:
             pass
@@ -406,6 +584,16 @@ def file_exists(filename):
 
 # Save data to CSV file
 def save_to_csv(data):
+    """
+    Saves the given data to a CSV file.
+
+    Args:
+        data (list): The data to be saved to the CSV file.
+
+    Raises:
+        Exception: If there is an error writing to the CSV file.
+
+    """
     global csv_filename
     try:
         # Set filename if not already set
@@ -430,6 +618,16 @@ def save_to_csv(data):
 
 # Main function to start measurement mode
 def start_mes_mode():
+    """
+    Starts the measurement mode and performs measurements at regular intervals.
+
+    This function runs an infinite loop and performs measurements every 30 minutes.
+    It collects data from various sensors, saves the data to a CSV file, and sends the data.
+
+    Returns:
+        int: Returns 0 if the measurement mode is stopped.
+
+    """
     global csv_filename
     start_time = time.monotonic()
     interval = 1800  # 30 minutes
@@ -447,11 +645,11 @@ def start_mes_mode():
             print('mean microns2=' + str(mean_microns2))
             print('mean microns3=' + str(mean_microns3))
 
-            temperature_dps310, pressure = test_dps310()
+            temperature_dps310, pressure = read_dps310()
             print('temperature_dps310=' + str(temperature_dps310))
             print('pressure=' + str(pressure))
 
-            temperature_sht41, humidity = test_sht41()
+            temperature_sht41, humidity = read_dps310()
             print('temperature_sht41=' + str(temperature_sht41))
             print('humidity=' + str(humidity))
 

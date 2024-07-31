@@ -53,6 +53,21 @@ void tokenStatusCallback(TokenInfo info);
 void receiveEvent(int howMany);
 void sendCSVToGoogleSheets(String date);
 
+/**
+ * @brief Initializes the necessary components and configurations for the program.
+ * 
+ * This function is called once when the program starts. It performs the following tasks:
+ * - Initializes serial communication with the USB port and the modem.
+ * - Sets the pin modes for various pins used in the program.
+ * - Initializes I2C communication as a slave with address 0x08.
+ * - Attaches the receiveEvent function to handle I2C data reception.
+ * - Initializes the SD card and checks if it is successfully initialized.
+ * - Reads the name of the last sent CSV file from the SD card.
+ * - Restarts the modem and establishes a GPRS connection.
+ * - Sets the GSM client and modem for Google Sheets communication.
+ * 
+ * @return void
+ */
 void setup() {
     // Initialize serial communication
     SerialUSB.begin(115200);
@@ -108,6 +123,11 @@ void setup() {
     GSheet.setGSMClient(&gsm_client, &modem, GSM_PIN, apn, gprsUser, gprsPass);
 }
 
+/**
+ * The main loop function that runs repeatedly.
+ * It checks if data has been received, parses the received data,
+ * saves the data to a CSV file, and sends the data to Google Sheets.
+ */
 void loop() {
     if (dataReceived) {
         dataReceived = false;
@@ -221,6 +241,11 @@ void loop() {
     }
 }
 
+/**
+ * @brief This function is called when data is received via I2C communication.
+ * 
+ * @param howMany The number of bytes received.
+ */
 void receiveEvent(int howMany) {
     receivedData = "";
     while (Wire.available()) {
@@ -230,6 +255,11 @@ void receiveEvent(int howMany) {
     dataReceived = true;
 }
 
+/**
+ * Sends a CSV file to Google Sheets.
+ * 
+ * @param date The date used to generate the file name.
+ */
 void sendCSVToGoogleSheets(String date) {
     String fileName = date + ".csv";
 
@@ -277,6 +307,16 @@ void sendCSVToGoogleSheets(String date) {
 }
 
 
+/**
+ * @brief Initializes the setup for Google Sheets integration.
+ * 
+ * This function sets the callback for Google API access token generation status (for debug purposes only).
+ * It also sets the seconds to refresh the authentication token before it expires.
+ * Finally, it begins the access token generation for Google API authentication using the provided client email, project ID, and private key.
+ * 
+ * @param None
+ * @return None
+ */
 void setupGsheet()
 {
     // Set the callback for Google API access token generation status (for debug only)
@@ -291,6 +331,11 @@ void setupGsheet()
     gsheetSetupReady = true;
 }
 
+/**
+ * Callback function to handle token status information.
+ * 
+ * @param info The TokenInfo object containing the token status information.
+ */
 void tokenStatusCallback(TokenInfo info)
 {
     if (info.status == token_status_error)

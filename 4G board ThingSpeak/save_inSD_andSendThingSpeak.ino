@@ -7,7 +7,7 @@
 #include <ArduinoLowPower.h>
 
 // Define API keys for each channel
-String ApikeyNode2 = "PVQKI3W5Y1ENSEFD";
+String ApikeyNode2 = "YOUR_API_KEY_NODE_2";
 String ApikeyNode3 = "YOUR_API_KEY_NODE_3";
 String ApikeyNode4 = "YOUR_API_KEY_NODE_4";
 String ApikeyNode5 = "YOUR_API_KEY_NODE_5";
@@ -26,6 +26,15 @@ const int maxRetries = 15;
 
 File dataFile;
 
+/**
+ * @brief Initializes the Arduino board and sets up the necessary configurations.
+ * 
+ * This function is called once when the Arduino board is powered on or reset.
+ * It initializes the serial communication, sets the pin modes, initializes the SD card,
+ * and performs other necessary setup tasks.
+ * 
+ * @return void
+ */
 void setup() {
     SerialUSB.begin(115200);
     Serial1.begin(115200);
@@ -65,6 +74,12 @@ void setup() {
     SerialUSB.println("SD card initialized.");
 }
 
+/**
+ * The main loop function that runs repeatedly.
+ * It checks if data has been received, parses the received data,
+ * saves the data to an SD card, and sends the data to ThingSpeak.
+ * If no data is received, it enters sleep mode.
+ */
 void loop() {
     if (dataReceived) {
         dataReceived = false;
@@ -261,6 +276,15 @@ void loop() {
     }
 }
 
+/**
+ * @brief Function to handle I2C receive event.
+ * 
+ * This function is called when data is received over I2C.
+ * It reads the received data and sets the dataReceived flag to true.
+ * It also detaches the interrupt associated with the WAKE_PIN.
+ * 
+ * @param howMany The number of bytes received.
+ */
 void receiveEvent(int howMany) {
     receivedData = "";
     while (Wire.available()) {
@@ -271,6 +295,11 @@ void receiveEvent(int howMany) {
     detachInterrupt(digitalPinToInterrupt(WAKE_PIN));
 }
 
+/**
+ * Enters the sleep mode.
+ * This function prints "Sleep mode!" to the SerialUSB and attaches an interrupt to the WAKE_PIN.
+ * It then puts the device into low power sleep mode using the LowPower.sleep() function.
+ */
 void enterSleepMode() {
     SerialUSB.println("Sleep mode!");
     attachInterrupt(digitalPinToInterrupt(WAKE_PIN), wakeUp, LOW);
@@ -279,11 +308,23 @@ void enterSleepMode() {
     LowPower.sleep();
 }
 
+/**
+ * @brief Function to exit sleep mode.
+ * 
+ * This function is called to exit sleep mode. It does not perform any specific actions.
+ * 
+ * @return void
+ */
 void wakeUp() {
     // Nothing to do here, just to exit sleep mode
     SerialUSB.println("wake up");
 }
 
+/**
+ * Checks the state of the SIM7600 module.
+ * 
+ * @return true if the module is turned on, false otherwise.
+ */
 bool moduleStateCheck() {
     int i = 0;
     bool moduleState = false;
@@ -300,6 +341,14 @@ bool moduleStateCheck() {
     return moduleState;
 }
 
+/**
+ * Sends a command to a device and waits for a response.
+ *
+ * @param command The command to send to the device.
+ * @param timeout The maximum time to wait for a response, in milliseconds.
+ * @param debug   Whether to print the response to the debug console.
+ * @return        The response received from the device.
+ */
 String sendData(String command, const int timeout, boolean debug) {
     String response = "";
     Serial1.print(command);
@@ -316,6 +365,14 @@ String sendData(String command, const int timeout, boolean debug) {
     return response;
 }
 
+/**
+ * Turns on the SIM7600 module.
+ * This function performs the following steps:
+ * 1. Sets the LTE_PWRKEY_PIN to LOW to power on the module.
+ * 2. Waits for 2 seconds for the module to be ready.
+ * 3. Sets the LTE_PWRKEY_PIN to HIGH and then back to LOW to complete the power on process.
+ * 4. Prints a message to the SerialUSB indicating that the SIM7600 module has been turned on.
+ */
 void powerOnSIM7600() {
     digitalWrite(LTE_PWRKEY_PIN, LOW);
     delay(2000); // Wait for module to be ready
@@ -325,6 +382,13 @@ void powerOnSIM7600() {
     SerialUSB.println("SIM7600 turned on.");
 }
 
+/**
+ * Turns off the SIM7600 module.
+ * This function sets the LTE_PWRKEY_PIN to HIGH for a brief period of time, then sets it to LOW.
+ * This ensures that the module is properly turned off.
+ * @param None
+ * @return None
+ */
 void powerOffSIM7600() {
     //digitalWrite(LTE_PWRKEY_PIN, HIGH);
     //delay(3000);

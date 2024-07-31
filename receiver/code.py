@@ -32,6 +32,12 @@ print("Waiting for packets...")
 
 # Initialize I2C bus with retry mechanism for pull-up resistor check
 def initialize_i2c():
+    """
+    Initializes the I2C bus and returns the I2C object.
+
+    Returns:
+        i2c (busio.I2C): The initialized I2C object.
+    """
     i2c = None
     while i2c is None:
         try:
