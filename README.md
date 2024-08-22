@@ -12,9 +12,13 @@ This repository represents the work accomplished during my 12-week internship at
 - **electronic diagrams**: Contains draw.io diagrams to represent the system.
 - **firmware boards**: Contains the firmware used on the RP2040 boards and the libraries.
 - **User Manual**: Contains documentation on how to use the project.
+- **Datasheets**: Contains several datasheets.
 - **receiver**: Contains the code used on the RP2040 receiver node.
 - **sender 1602LCD**: Contains the code for the sender node using an LCD1602 screen.
 - **sender ssd1306**: Contains the same code as the sender 1602LCD but for use with an OLED 1306 screen.
 
+## Useful links
 
+[Monogoto docs](https://docs.monogoto.io)
 
+[CircuitPython docs](https://learn.adafruit.com/welcome-to-circuitpython)
